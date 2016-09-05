@@ -1,16 +1,14 @@
 FROM alpine:latest
 
 ARG fdupesver=1.6.1
-ARG lfmver=3.0.1
-
-ADD https://github.com/adrianlopezroche/fdupes/archive/v${fdupesver}.tar.gz /tmp/fdupes/src.tar.gz
-ADD https://bootstrap.pypa.io/get-pip.py /tmp/get-pip.py
+ARG sshport=32768
 
 RUN apk update && \
     apk --no-cache upgrade && \
     apk --no-cache add bash ncdu nano dropbear mc python3 git alpine-sdk
 
 #add fdupes from source, since there isn't an Alpine package available
+ADD https://github.com/adrianlopezroche/fdupes/archive/v${fdupesver}.tar.gz /tmp/fdupes/src.tar.gz
 WORKDIR /tmp/fdupes
 RUN tar -xvf src.tar.gz
 WORKDIR /tmp/fdupes/fdupes-${fdupesver}
@@ -19,17 +17,23 @@ RUN make fdupes && \
     rm -rf /tmp/fdupes
 WORKDIR /
 
+# remove unneeded SDK, since we are done building fdupes
+RUN apk --no-cache del alpine-sdk
+
+#Install pip for python
+ADD https://bootstrap.pypa.io/get-pip.py /tmp/get-pip.py
 RUN python3 /tmp/get-pip.py && \
     rm /tmp/get-pip.py && \
     pip3 install setuptools --upgrade && \
-    pip3 install wheel --upgrade && \
-    apk --no-cache del alpine-sdk
+    pip3 install wheel --upgrade
 
-#add ll alias, set bash to default
+#add alias
 RUN echo 'alias ll="ls -la"' > /root/.bashrc && \
     echo 'alias fd="fdupes -r -A -S -d ."' >> /root/.bashrc && \
-    chmod 600 /root/.bashrc && \
-    echo "# ~/.profile: executed by the command interpreter for login shells." > /root/.profile && \
+    chmod 600 /root/.bashrc
+
+#add .profile so .bashrc is used    
+RUN echo "# ~/.profile: executed by the command interpreter for login shells." > /root/.profile && \
     echo "# This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login" >> /root/.profile && \
     echo "# exists." >> /root/.profile && \
     echo "# see /usr/share/doc/bash/examples/startup-files for examples." >> /root/.profile && \
@@ -51,11 +55,17 @@ RUN echo 'alias ll="ls -la"' > /root/.bashrc && \
     echo "if [ -d \"\$HOME/bin\" ] ; then" >> /root/.profile && \
     echo "    PATH=\"\$HOME/bin:\$PATH\"" >> /root/.profile && \
     echo "fi" >> /root/.profile && \    
-    chmod 600 /root/.profile && \    
-    sed -i 's~/bin/ash~/bin/bash~' /etc/passwd && \
-    echo 'root:password' | chpasswd && \
-    mkdir -p /etc/dropbear/
+    chmod 600 /root/.profile
 
-EXPOSE 32768
+#set password for root user so you can ssh, set bash as default shell
+RUN sed -i 's~/bin/ash~/bin/bash~' /etc/passwd && \
+    echo 'root:password' | chpasswd
 
-CMD ["/usr/sbin/dropbear", "-R", "-E", "-F", "-a", "-p", "32768", "-K", "30"]
+#Create required folder for dropbear
+RUN mkdir -p /etc/dropbear/
+
+#expose the ssh port
+EXPOSE ${sshport}
+
+#run dropbear sshd server
+CMD ["/usr/sbin/dropbear", "-R", "-E", "-F", "-a", "-p", "${sshport}", "-K", "30"]

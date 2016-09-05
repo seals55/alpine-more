@@ -5,7 +5,7 @@ ARG sshport=32768
 
 RUN apk update && \
     apk --no-cache upgrade && \
-    apk --no-cache add bash ncdu nano dropbear mc python3 git alpine-sdk
+    apk --no-cache add bash ncdu nano dropbear mc python3 git alpine-sdk screen tmux
 
 #add fdupes from source, since there isn't an Alpine package available
 ADD https://github.com/adrianlopezroche/fdupes/archive/v${fdupesver}.tar.gz /tmp/fdupes/src.tar.gz

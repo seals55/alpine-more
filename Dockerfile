@@ -26,7 +26,8 @@ RUN python3 /tmp/get-pip.py && \
     apk --no-cache del alpine-sdk
 
 #add ll alias, set bash to default
-RUN echo 'alias ll="ls -la"' > /root/.bashrc && \ 
+RUN echo 'alias ll="ls -la"' > /root/.bashrc && \
+    echo 'alias fd="fdupes -r -A -S -d ."' >> /root/.bashrc && \
     chmod 600 /root/.bashrc && \
     echo "# ~/.profile: executed by the command interpreter for login shells." > /root/.profile && \
     echo "# This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login" >> /root/.profile && \
@@ -49,8 +50,8 @@ RUN echo 'alias ll="ls -la"' > /root/.bashrc && \
     echo "# set PATH so it includes user's private bin if it exists" >> /root/.profile && \
     echo "if [ -d \"\$HOME/bin\" ] ; then" >> /root/.profile && \
     echo "    PATH=\"\$HOME/bin:\$PATH\"" >> /root/.profile && \
-    echo "fi" >> /root/.profile && \
-    chmod 600 /root/.profile && \
+    echo "fi" >> /root/.profile && \    
+    chmod 600 /root/.profile && \    
     sed -i 's~/bin/ash~/bin/bash~' /etc/passwd && \
     echo 'root:password' | chpasswd && \
     mkdir -p /etc/dropbear/

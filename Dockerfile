@@ -54,7 +54,10 @@ RUN echo "# ~/.profile: executed by the command interpreter for login shells." >
     echo "# set PATH so it includes user's private bin if it exists" >> /root/.profile && \
     echo "if [ -d \"\$HOME/bin\" ] ; then" >> /root/.profile && \
     echo "    PATH=\"\$HOME/bin:\$PATH\"" >> /root/.profile && \
-    echo "fi" >> /root/.profile && \    
+    echo "fi" >> /root/.profile && \
+    echo "" >> /root/.profile && \
+    echo "# run tumx by default to allow disconnect\reconnect" >> /root/.profile && \    
+    echo "tmux" >> /root/.profile && \
     chmod 600 /root/.profile
 
 #set password for root user so you can ssh, set bash as default shell

@@ -29,6 +29,7 @@ RUN python3 /tmp/get-pip.py && \
 #add alias
 RUN echo 'alias ll="ls -la"' > /root/.bashrc && \
     echo 'alias fd="fdupes -r -A -S -d \$(pwd)"' >> /root/.bashrc && \
+    echo 'alias fdt="fdupes -r -A \$(pwd)"' /root/.bashrc && \
     chmod 600 /root/.bashrc
 
 #add .profile so .bashrc is used    

@@ -1,7 +1,6 @@
 FROM alpine:latest
 
 ARG fdupesver=1.6.1
-ARG sshport=32768
 
 RUN apk update && \
     apk --no-cache upgrade && \
@@ -68,7 +67,7 @@ RUN sed -i 's~/bin/ash~/bin/bash~' /etc/passwd && \
 RUN mkdir -p /etc/dropbear/
 
 #expose the ssh port
-EXPOSE ${sshport}
+EXPOSE 32768
 
 #run dropbear sshd server
-CMD ["/usr/sbin/dropbear", "-R", "-E", "-F", "-a", "-p", "${sshport}", "-K", "30"]
+CMD ["/usr/sbin/dropbear", "-R", "-E", "-F", "-a", "-p", "32768", "-K", "30"]

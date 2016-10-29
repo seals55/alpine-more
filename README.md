@@ -17,3 +17,5 @@ Using the default Dockerfile, you will get a sshd server running on port 32768.
 
 Usage (non-synology):
 docker run -p 32768:32768 -d seals/alpine-more
+
+Docker Hub link: https://hub.docker.com/r/seals/alpine-more/
